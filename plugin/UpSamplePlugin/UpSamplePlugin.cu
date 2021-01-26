@@ -209,7 +209,7 @@ int UpSamplePlugin::enqueue(int batchSize, const void*const * inputs, void** out
             forwardGpu<__half>((const __half *)inputs[0],(__half *)outputs[0],batchSize,mCHW.d[0],mOutputHeight,mOutputWidth);
             break;
         case DataType::kINT8:
-            forwardGpu<u_int8_t>((const u_int8_t *)inputs[0],(u_int8_t *)outputs[0],batchSize,mCHW.d[0],mOutputHeight,mOutputWidth);
+            forwardGpu<uint8_t>((const uint8_t *)inputs[0],(uint8_t *)outputs[0],batchSize,mCHW.d[0],mOutputHeight,mOutputWidth);
             break;
         default:
             std::cerr << "error data type" << std::endl;

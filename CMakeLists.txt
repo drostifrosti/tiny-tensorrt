@@ -103,6 +103,11 @@ find_path(TENSORRT_INCLUDE_DIR NvInfer.h
   HINTS ${TENSORRT_ROOT} ${CUDA_TOOLKIT_ROOT_DIR}
   PATH_SUFFIXES include)
 MESSAGE(STATUS "Found TensorRT headers at ${TENSORRT_INCLUDE_DIR}")
+include_directories("${TENSORRT_INCLUDE_DIR}")
+link_directories("${TENSORRT_ROOT}/lib")
+link_libraries("nvinfer.lib")
+link_libraries("nvonnxparser.lib")
+link_libraries("nvinfer_plugin.lib")
 
 message(STATUS "
 Generated gencode flags: ${CUDA_gencode_flags} 
@@ -119,7 +124,7 @@ file(GLOB_RECURSE trt_source
      plugin/*.cpp
      )
 cuda_add_library(tinytrt SHARED ${trt_source})
-target_compile_options(tinytrt PUBLIC -std=c++11 -Wall -Wfloat-conversion)
+target_compile_options(tinytrt PUBLIC -std=c++11 -Wall)
 set_target_properties(tinytrt PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 if(BUILD_PYTHON)
@@ -142,7 +147,7 @@ if(BUILD_TEST)
       test/test.cpp
       )
   add_executable(unit_test ${test_source})
-  target_compile_options(unit_test PUBLIC -std=c++11 -Wall -Wfloat-conversion)
+  target_compile_options(unit_test PUBLIC -std=c++11 -Wall)
   target_link_libraries(unit_test tinytrt)
   target_link_libraries(unit_test nvinfer)
   target_link_libraries(unit_test nvinfer_plugin)
