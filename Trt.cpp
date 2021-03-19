@@ -118,10 +118,12 @@ void Trt::CreateEngine(
     mBatchSize = maxBatchSize;
     mRunMode = mode;
     if(!DeserializeEngine(engineFile)) {
-        if(!BuildEngineWithUff(uffModel,engineFile,inputTensorNames,inputDims, outputTensorNames)) {
+        /*if(!BuildEngineWithUff(uffModel,engineFile,inputTensorNames,inputDims, outputTensorNames)) {
             spdlog::error("error: could not deserialize or build engine");
             return;
-        }
+        }*/
+        spdlog::error("BuildEngineWithUff is commented out");
+        return;
     }
     spdlog::info("create execute context and malloc device memory...");
     InitEngine();
@@ -422,43 +424,43 @@ bool Trt::BuildEngineWithOnnx(const std::string& onnxModel,
     return true;
 }
 
-bool Trt::BuildEngineWithUff(const std::string& uffModel,
-                      const std::string& engineFile,
-                      const std::vector<std::string>& inputTensorNames,
-                      const std::vector<std::vector<int>>& inputDims,
-                      const std::vector<std::string>& outputTensorNames) {
-    spdlog::info("build uff engine with {}...", uffModel);
-    assert(mBuilder != nullptr);
-    mNetwork = mBuilder->createNetworkV2(mFlags);
-    assert(mNetwork != nullptr);
-    nvuffparser::IUffParser* parser = nvuffparser::createUffParser();
-    assert(parser != nullptr);
-    assert(inputTensorNames.size() == inputDims.size());
-    //parse input
-    for(size_t i=0;i<inputTensorNames.size();i++) {
-        nvinfer1::Dims dim;
-        dim.nbDims = inputDims[i].size();
-        for(int j=0;j<dim.nbDims;j++) {
-            dim.d[j] = inputDims[i][j];
-        }
-        parser->registerInput(inputTensorNames[i].c_str(), dim, nvuffparser::UffInputOrder::kNCHW);
-    }
-    //parse output
-    for(size_t i=0;i<outputTensorNames.size();i++) {
-        parser->registerOutput(outputTensorNames[i].c_str());
-    }
-    if(!parser->parse(uffModel.c_str(), *mNetwork, nvinfer1::DataType::kFLOAT)) {
-        spdlog::error("error: parse model failed");
-    }
-    BuildEngine();
-    spdlog::info("serialize engine to {}", engineFile);
-    SaveEngine(engineFile);
-    
-    mBuilder->destroy();
-    mNetwork->destroy();
-    parser->destroy();
-    return true;
-}
+//bool Trt::BuildEngineWithUff(const std::string& uffModel,
+//                      const std::string& engineFile,
+//                      const std::vector<std::string>& inputTensorNames,
+//                      const std::vector<std::vector<int>>& inputDims,
+//                      const std::vector<std::string>& outputTensorNames) {
+//    spdlog::info("build uff engine with {}...", uffModel);
+//    assert(mBuilder != nullptr);
+//    mNetwork = mBuilder->createNetworkV2(mFlags);
+//    assert(mNetwork != nullptr);
+//    nvuffparser::IUffParser* parser = nvuffparser::createUffParser();
+//    assert(parser != nullptr);
+//    assert(inputTensorNames.size() == inputDims.size());
+//    //parse input
+//    for(size_t i=0;i<inputTensorNames.size();i++) {
+//        nvinfer1::Dims dim;
+//        dim.nbDims = inputDims[i].size();
+//        for(int j=0;j<dim.nbDims;j++) {
+//            dim.d[j] = inputDims[i][j];
+//        }
+//        parser->registerInput(inputTensorNames[i].c_str(), dim, nvuffparser::UffInputOrder::kNCHW);
+//    }
+//    //parse output
+//    for(size_t i=0;i<outputTensorNames.size();i++) {
+//        parser->registerOutput(outputTensorNames[i].c_str());
+//    }
+//    if(!parser->parse(uffModel.c_str(), *mNetwork, nvinfer1::DataType::kFLOAT)) {
+//        spdlog::error("error: parse model failed");
+//    }
+//    BuildEngine();
+//    spdlog::info("serialize engine to {}", engineFile);
+//    SaveEngine(engineFile);
+//    
+//    mBuilder->destroy();
+//    mNetwork->destroy();
+//    parser->destroy();
+//    return true;
+//}
 
 void Trt::InitEngine() {
     spdlog::info("init engine...");

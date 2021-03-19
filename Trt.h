@@ -210,11 +210,11 @@ protected:
                      const std::string& engineFile,
                      const std::vector<std::string>& customOutput);
     
-    bool BuildEngineWithUff(const std::string& uffModel,
+    /*bool BuildEngineWithUff(const std::string& uffModel,
                       const std::string& engineFile,
                       const std::vector<std::string>& inputTensorName,
                       const std::vector<std::vector<int>>& inputDims,
-                      const std::vector<std::string>& outputTensorName);
+                      const std::vector<std::string>& outputTensorName);*/
                      
     /**
      * description: Init resource such as device memory
